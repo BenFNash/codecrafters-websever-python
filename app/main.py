@@ -10,11 +10,13 @@ class RequestHandler(BaseHTTPRequestHandler):
         elif path_chunks[1] == "echo":
             response = "HTTP/1.1 200 OK\r\n\r\n"
             response += "Content-Type: text/plain\r\n"
-            response += f"Content-Length: {len(path_chunks[1])}"
+            response += f"Content-Length: {len(path_chunks[1])}\r\n\r\n"
+            response += path_chunks[2]
             response = bytes(response, 'utf-8')
 
         else:
             response = b"HTTP/1.1 404 Not Found\r\n\r\n"
+
         self.wfile.write(response)
 
     def do_POST(self):
