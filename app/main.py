@@ -1,16 +1,15 @@
 import socket
 
-
-def main():
-    print("Logs from your program will appear here!")
-
-    server_socket: socket.socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    server_socket.accept()# wait for client
-
 def handle_client(client_socket, address):
     print(f"Accepted connection from {address}")
-    client_socket.recv(1024)
-    response = "HTTP/1.1 200 OK\r\n\r\n"
+    request = client_socket.recv(1024).decode("utf-8")
+
+    path = request.split(" ")[1]
+    if path == "/":
+        response = "HTTP/1.1 200 OK\r\n\r\n"
+    else:
+        response = "HTTP/1.1 404 Not Found\r\n\r\n"
+    
     client_socket.send(response.encode())
     client_socket.close()
 
