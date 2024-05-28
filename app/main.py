@@ -12,6 +12,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             response += "Content-Type: text/plain\r\n"
             response += f"Content-Length: {len(path_chunks[1])}\r\n\r\n"
             response += path_chunks[2]
+            print(response)
             response = bytes(response, 'utf-8')
 
         else:
