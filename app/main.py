@@ -1,3 +1,4 @@
+import socket
 import socketserver
 from http.server import BaseHTTPRequestHandler
 
@@ -48,7 +49,10 @@ class RequestHandler(BaseHTTPRequestHandler):
 #         handle_client(client_socket, address)
 
 def start_server(host, port):
-    with socketserver.TCPServer((host, port), RequestHandler) as server:
+    with socketserver.TCPServer((host, port), RequestHandler, bind_and_activate=False) as server:
+        server.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        server.server_bind()
+        server.server_activate()
         print(f"Server listening on {host}:{port}")
         server.serve_forever()
 
