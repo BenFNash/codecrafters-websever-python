@@ -8,11 +8,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         if path_chunks[1] == "":
             response = b"HTTP/1.1 200 OK\r\n\r\n"
         elif path_chunks[1] == "echo":
-            response = "HTTP/1.1 200 OK\r\n\r\n"
+            response = "HTTP/1.1 200 OK\r\n"
             response += "Content-Type: text/plain\r\n"
             response += f"Content-Length: {len(path_chunks[1])}\r\n\r\n"
             response += path_chunks[2]
-            print(response)
             response = bytes(response, 'utf-8')
 
         else:
