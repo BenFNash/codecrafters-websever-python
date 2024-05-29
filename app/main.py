@@ -37,7 +37,6 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         self.wfile.write(response)
 
-
     def _get_echo_response(self, path_chunks) -> bytes:
         if len(path_chunks) < 3:
             return b"HTTP/1.1 400 Bad Request\r\n\r\n"
@@ -104,7 +103,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         return b"HTTP/1.1 201 Created\r\n\r\n"
 
 
-
 def start_server(host, port):
     with socketserver.TCPServer((host, port), RequestHandler, bind_and_activate=False) as server:
         server.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
@@ -112,8 +110,6 @@ def start_server(host, port):
         server.server_activate()
         print(f"Server listening on {host}:{port}")
         server.serve_forever()
-
-
 
 
 if __name__ == "__main__":
