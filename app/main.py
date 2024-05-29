@@ -98,7 +98,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         with open(directory+"/"+filename, 'w') as f:
             f.write(filecontents.decode('utf-8'))
 
-        return b"HTTP/1.1 201 OK\r\n\r\n"
+        return b"HTTP/1.1 201 Created\r\n\r\n"
 
 
 
