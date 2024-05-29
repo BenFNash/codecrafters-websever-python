@@ -1,7 +1,4 @@
 import sys
-from typing import ParamSpecKwargs
-from urllib.parse import parse_qs
-import cgi
 import socket
 import socketserver
 from http.server import BaseHTTPRequestHandler
@@ -44,15 +41,23 @@ class RequestHandler(BaseHTTPRequestHandler):
         if len(path_chunks) < 3:
             return b"HTTP/1.1 400 Bad Request\r\n\r\n"
 
+        response = "HTTP/1.1 200 OK\r\n"
+        if self.headers.get("accept-encoding"):
+            encoding = self.headers.get("accept-encoding", "")
+            if "gzip" in encoding:
+                response += "Content-Encoding: gzip" 
+
         body = path_chunks[2]
 
-        response = "HTTP/1.1 200 OK\r\n"
         response += "Content-Type: text/plain\r\n"
         response += f"Content-Length: {len(body)}\r\n\r\n"
         response += body
         response = bytes(response, 'utf-8')
 
         return response
+
+
+
 
     def _get_user_agent_response(self) -> bytes:
         user_agent = self.headers.get("User-Agent")
