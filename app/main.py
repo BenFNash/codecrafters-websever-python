@@ -45,7 +45,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if self.headers.get("accept-encoding"):
             encoding = self.headers.get("accept-encoding", "")
             if "gzip" in encoding:
-                response += "Content-Encoding: gzip" 
+                response += "Content-Encoding: gzip\r\n"
 
         body = path_chunks[2]
 
