@@ -33,6 +33,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         response += f"Content-Length: {len(body)}\r\n\r\n"
         response += body
         response = bytes(response, 'utf-8')
+
         return response
 
     def _get_user_agent_response(self) -> bytes:
