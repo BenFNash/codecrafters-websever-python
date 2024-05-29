@@ -1,11 +1,14 @@
 import sys
+from typing import ParamSpecKwargs
+from urllib.parse import parse_qs
+import cgi
 import socket
 import socketserver
 from http.server import BaseHTTPRequestHandler
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        print(f"Recieved GET request for {self.path}")
+        print(f"Recieved {self.command} request for {self.path}")
         path_chunks = self.path.split("/")
         if path_chunks[1] == "":
             response = b"HTTP/1.1 200 OK\r\n\r\n"
@@ -24,7 +27,18 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(response)
 
     def do_POST(self):
-        ...
+        print(f"Received {self.command} request for {self.path}")
+        path_chunks = self.path.split("/")
+        if path_chunks[1] == "":
+            response = b"HTTP/1.1 200 OK\r\n\r\n"
+
+        elif path_chunks[1] == "files":
+            response = self._post_files_response(path_chunks)
+        else:
+            response = b"HTTP/1.1 404 Not Found\r\n\r\n"
+
+        self.wfile.write(response)
+
 
     def _get_echo_response(self, path_chunks) -> bytes:
         if len(path_chunks) < 3:
@@ -71,6 +85,20 @@ class RequestHandler(BaseHTTPRequestHandler):
         response += contents
         response = bytes(response, 'utf-8')
         return response
+
+    def _post_files_response(self, path_chunks) -> bytes:
+        if len(path_chunks) < 3:
+            return b"HTTP/1.1 400 Bad Request\r\n\r\n"
+
+        filename = path_chunks[2]
+        directory = sys.argv[2]
+        filelength = int(self.headers['content-length'])
+        filecontents = self.rfile.read(filelength)
+
+        with open(directory+"/"+filename, 'w') as f:
+            f.write(filecontents.decode('utf-8'))
+
+        return b"HTTP/1.1 201 OK\r\n\r\n"
 
 
 
