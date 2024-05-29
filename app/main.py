@@ -8,24 +8,12 @@ class RequestHandler(BaseHTTPRequestHandler):
         path_chunks = self.path.split("/")
         if path_chunks[1] == "":
             response = b"HTTP/1.1 200 OK\r\n\r\n"
+
         elif path_chunks[1] == "echo":
-            response = "HTTP/1.1 200 OK\r\n"
-            response += "Content-Type: text/plain\r\n"
-            response += f"Content-Length: {len(path_chunks[2])}\r\n\r\n"
-            response += path_chunks[2]
-            response = bytes(response, 'utf-8')
+            response = self._get_echo_response(path_chunks)
+
         elif path_chunks[1] == "user-agent":
-            user_agent = self.headers.get("User-Agent")
-            if user_agent:
-                response = "HTTP/1.1 200 OK\r\n"
-                response += "Content-Type: text/plain\r\n"
-                response += f"Content-Length: {len(user_agent)}\r\n\r\n"
-                response += user_agent
-                response = bytes(response, 'utf-8')
-            else:
-                response = b"HTTP/1.1 400 Bad Request\r\n\r\n"
-
-
+            response = self._get_user_agent_response()
         else:
             response = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
@@ -33,6 +21,31 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         ...
+
+    def _get_echo_response(self, path_chunks) -> bytes:
+        if len(path_chunks) < 3:
+            return b"HTTP/1.1 400 Bad Request\r\n\r\n"
+
+        body = path_chunks[2]
+
+        response = "HTTP/1.1 200 OK\r\n"
+        response += "Content-Type: text/plain\r\n"
+        response += f"Content-Length: {len(body)}\r\n\r\n"
+        response += body
+        response = bytes(response, 'utf-8')
+        return response
+
+    def _get_user_agent_response(self) -> bytes:
+        user_agent = self.headers.get("User-Agent")
+        if user_agent:
+            response = "HTTP/1.1 200 OK\r\n"
+            response += "Content-Type: text/plain\r\n"
+            response += f"Content-Length: {len(user_agent)}\r\n\r\n"
+            response += user_agent
+            response = bytes(response, 'utf-8')
+        else:
+            response = b"HTTP/1.1 400 Bad Request\r\n\r\n"
+        return response
 
 
 def start_server(host, port):
