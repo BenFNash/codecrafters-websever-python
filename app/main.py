@@ -17,7 +17,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         elif path_chunks[1] == "user-agent":
             user_agent = self.headers.get("User-Agent")
             if user_agent:
-                response = "HTTP/1.1 200 OK\r\n\r\n"
+                response = "HTTP/1.1 200 OK\r\n"
                 response += "Content-Type: text/plain\r\n"
                 response += f"Content-Length: {len(user_agent)}\r\n\r\n"
                 response += user_agent
