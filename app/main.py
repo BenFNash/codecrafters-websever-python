@@ -1,3 +1,4 @@
+import sys
 import socket
 import socketserver
 from http.server import BaseHTTPRequestHandler
@@ -56,8 +57,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             return b"HTTP/1.1 400 Bad Request\r\n\r\n"
 
         filename = path_chunks[2]
+        directory = sys.argv[2]
+
         try: 
-            with open(filename, 'r') as f:
+            with open(directory+"/"+filename, 'r') as f:
                 contents = f.read()
         except FileNotFoundError:
             return b"HTTP/1.1 404 Not Found\r\n\r\n"
