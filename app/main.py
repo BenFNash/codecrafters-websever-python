@@ -1,4 +1,5 @@
 import sys
+import gzip
 import socket
 import socketserver
 from http.server import BaseHTTPRequestHandler
@@ -42,21 +43,19 @@ class RequestHandler(BaseHTTPRequestHandler):
             return b"HTTP/1.1 400 Bad Request\r\n\r\n"
 
         response = "HTTP/1.1 200 OK\r\n"
-        body = path_chunks[2]
+        body = bytes(path_chunks[2], "utf-8")
         if self.headers.get("accept-encoding"):
             encoding = self.headers.get("accept-encoding", "")
             if "gzip" in encoding:
                 response += "Content-Encoding: gzip\r\n"
+                body = gzip.compress(body)
 
         response += "Content-Type: text/plain\r\n"
         response += f"Content-Length: {len(body)}\r\n\r\n"
-        response += body
         response = bytes(response, 'utf-8')
+        response += body
 
         return response
-
-
-
 
     def _get_user_agent_response(self) -> bytes:
         user_agent = self.headers.get("User-Agent")
