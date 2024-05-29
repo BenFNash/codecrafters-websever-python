@@ -14,6 +14,9 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif path_chunks[1] == "user-agent":
             response = self._get_user_agent_response()
+
+        elif path_chunks[1] == "files":
+            response = self._get_files_response(path_chunks)
         else:
             response = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
@@ -38,15 +41,34 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def _get_user_agent_response(self) -> bytes:
         user_agent = self.headers.get("User-Agent")
-        if user_agent:
-            response = "HTTP/1.1 200 OK\r\n"
-            response += "Content-Type: text/plain\r\n"
-            response += f"Content-Length: {len(user_agent)}\r\n\r\n"
-            response += user_agent
-            response = bytes(response, 'utf-8')
-        else:
-            response = b"HTTP/1.1 400 Bad Request\r\n\r\n"
+        if not user_agent:
+            return b"HTTP/1.1 400 Bad Request\r\n\r\n"
+
+        response = "HTTP/1.1 200 OK\r\n"
+        response += "Content-Type: text/plain\r\n"
+        response += f"Content-Length: {len(user_agent)}\r\n\r\n"
+        response += user_agent
+        response = bytes(response, 'utf-8')
         return response
+
+    def _get_files_response(self, path_chunks) -> bytes:
+        if len(path_chunks) < 3:
+            return b"HTTP/1.1 400 Bad Request\r\n\r\n"
+
+        filename = path_chunks[2]
+        try: 
+            with open(filename, 'r') as f:
+                contents = f.read()
+        except FileNotFoundError:
+            return b"HTTP/1.1 404 Not Found\r\n\r\n"
+
+        response = "HTTP/1.1 200 OK\r\n"
+        response += "Content-Type: application/octet-stream\r\n"
+        response += f"Content-Length: {len(contents)}\r\n\r\n"
+        response += contents
+        response = bytes(response, 'utf-8')
+        return response
+
 
 
 def start_server(host, port):
